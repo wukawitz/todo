@@ -1,0 +1,14 @@
+{
+    "name": "Todo",
+    "short_name": "Todo",
+    "description": "A simple todo list app",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "todo.svg",
+        "sizes": "any",
+        "type": "image/svg+xml"
+      }
+    ]
+  }
