@@ -12,14 +12,16 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="todo.svg" type="image/svg+xml">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
             --text-color: #212529;
             --primary-color: #007bff;
             --border-color: #dee2e6;
-            --secondary-color: #6c757d; /* For edit button */
-            --danger-color: #dc3545;    /* For delete button */
+            --secondary-color: #6c757d;
+            --danger-color: #dc3545;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         [data-theme="dark"] {
@@ -29,6 +31,7 @@
             --border-color: #495057;
             --secondary-color: #adb5bd;
             --danger-color: #e63946;
+            --shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         [data-theme="solarized"] {
@@ -38,6 +41,7 @@
             --border-color: #93a1a1;
             --secondary-color: #586e75;
             --danger-color: #dc322f;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         [data-theme="pastel"] {
@@ -47,6 +51,7 @@
             --border-color: #e07a5f;
             --secondary-color: #5a7c65;
             --danger-color: #e07a5f;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         [data-theme="neon"] {
@@ -56,68 +61,93 @@
             --border-color: #00ffcc;
             --secondary-color: #e94560;
             --danger-color: #ff6f61;
+            --shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
+            font-family: 'Inter', sans-serif;
             transition: all 0.3s ease;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0.75rem;
         }
 
-        .container {
-            max-width: 600px;
-            padding: 1rem;
+        .app-container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: var(--bg-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .task-item {
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
-            border-radius: 0.25rem;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            padding: 1rem;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .task-item.high-priority { background-color: #dc354522; }
-        .task-item.medium-priority { background-color: #ffc10722; }
-        .task-item.low-priority { background-color: #28a74522; }
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .task-item.high-priority { background-color: #dc354508; }
+        .task-item.medium-priority { background-color: #ffc10708; }
+        .task-item.low-priority { background-color: #28a74508; }
 
         .task-text {
             flex: 1;
-            margin-left: 0.5rem;
+            margin-left: 1rem;
             word-break: break-word;
+            font-weight: 500;
+            letter-spacing: 0.2px;
         }
 
         .task-actions {
             display: flex;
-            flex-shrink: 0;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
         }
 
-        .theme-toggle {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .task-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
 
-        .toast-container {
-            position: fixed;
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1050;
-            max-width: 90%;
+        .form-control {
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
         }
 
-        .toast {
-            background-color: #f8f9fa;
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
         }
 
-        /* Button Overrides */
+        .btn {
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -162,60 +192,199 @@
             background-color: var(--secondary-color);
             color: var(--bg-color);
         }
+
+        .theme-toggle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--bg-color);
+        }
+
+        .theme-toggle:hover {
+            background-color: color-mix(in srgb, var(--primary-color) 80%, #000);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            max-width: 90%;
+        }
+
+        .toast {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+        }
+
+        /* Circular Toggle Styles */
+        .toggle-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: transparent;
+            padding: 0;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-btn.completed {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+
+        .toggle-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--bg-color);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Circular Action Button Styles */
+        .action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.edit-btn {
+            color: var(--secondary-color);
+        }
+
+        .action-btn.delete-btn {
+            color: var(--danger-color);
+        }
+
+        .action-btn.edit-btn:hover {
+            border-color: var(--secondary-color);
+            background-color: rgba(var(--secondary-color), 0.1);
+        }
+
+        .action-btn.delete-btn:hover {
+            border-color: var(--danger-color);
+            background-color: rgba(var(--danger-color), 0.1);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-body .form-control {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center">
-                <img src="todo.svg" alt="ToDo Icon" style="width: 64px; height: 64px; margin-right: 0.5rem;">
+                <img src="todo.svg" alt="ToDo Icon" style="width: 48px; height: 48px; margin-right: 1rem;">
             </div>
-            <div class="d-flex align-items-center">
-                <input type="text" class="form-control me-2" id="searchInput" placeholder="Search tasks..." style="width: 150px;">
-                <button class="btn btn-primary" id="themeToggle">🌓</button>
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search tasks..." style="max-width: 200px;">
+                <button class="theme-toggle" id="themeToggle">🌓</button>
             </div>
         </header>
 
-        <div class="mb-3">
-            <input type="text" class="form-control mb-2" id="taskInput" placeholder="New task...">
-            <div class="btn-group d-block mb-2" role="group" id="priorityGroup">
-                <button type="button" class="btn btn-xs btn-outline-success" data-priority="low">Low</button>
-                <button type="button" class="btn btn-xs btn-outline-warning" data-priority="medium">Medium</button>
-                <button type="button" class="btn btn-xs btn-outline-danger" data-priority="high">High</button>
+        <div class="mb-4">
+            <input type="text" class="form-control mb-3" id="taskInput" placeholder="Add a new task...">
+            <div class="d-flex gap-2 mb-3" role="group" id="priorityGroup">
+                <button type="button" class="btn btn-outline-success" data-priority="low">Low</button>
+                <button type="button" class="btn btn-outline-warning" data-priority="medium">Medium</button>
+                <button type="button" class="btn btn-outline-danger" data-priority="high">High</button>
             </div>
-            <button class="btn btn-primary" id="addTask">Add</button>
+            <button class="btn btn-primary w-100" id="addTask">Add Task</button>
         </div>
 
         <div id="taskList"></div>
 
-        <!-- Toast Notification Container -->
         <div class="toast-container">
             <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="2000">
                 <div class="toast-body"></div>
             </div>
         </div>
+
+        <!-- Edit Task Modal -->
+        <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" class="form-control" id="editTaskInput" placeholder="Enter task text">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="saveTaskBtn">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Add Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./service-worker.js')
-            .then((registration) => {
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch((error) => {
-                console.log('Service Worker registration failed:', error);
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
             });
-        });
         }
 
         let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         let currentTheme = localStorage.getItem('theme') || 'light';
 
-        // Initialize theme
         document.body.setAttribute('data-theme', currentTheme);
 
         function saveTasks() {
@@ -235,14 +404,14 @@
             
             taskList.innerHTML = displayTasks.map(task => `
                 <div class="task-item ${task.priority}-priority">
-                    <div class="d-flex align-items-center">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} 
-                               data-id="${task.id}" class="form-check-input me-2">
+                    <div class="task-content">
+                        <button class="toggle-btn ${task.completed ? 'completed' : ''}" 
+                                data-id="${task.id}"></button>
                         <span class="task-text ${task.completed ? 'text-decoration-line-through' : ''}">${task.text}</span>
                     </div>
                     <div class="task-actions">
-                        <button class="btn btn-xs btn-outline-secondary edit-btn" data-id="${task.id}" style="min-width: 30px;">✎</button>
-                        <button class="btn btn-xs btn-outline-danger delete-btn ms-1" data-id="${task.id}" style="min-width: 30px;">×</button>
+                        <button class="action-btn edit-btn" data-id="${task.id}">✎</button>
+                        <button class="action-btn delete-btn" data-id="${task.id}">×</button>
                     </div>
                 </div>
             `).join('');
@@ -269,13 +438,12 @@
             localStorage.setItem('theme', currentTheme);
         }
 
-        // Event Listeners
         document.getElementById('addTask').addEventListener('click', () => {
             const taskInput = document.getElementById('taskInput');
             const text = taskInput.value.trim();
             if (text) {
                 const activeButton = document.querySelector('#priorityGroup .btn.active');
-                const priority = activeButton ? activeButton.dataset.priority : 'low'; // Default to 'low'
+                const priority = activeButton ? activeButton.dataset.priority : 'low';
                 addTask(text, priority);
                 taskInput.value = '';
             }
@@ -292,9 +460,9 @@
         document.getElementById('taskList').addEventListener('click', (e) => {
             const taskId = parseInt(e.target.dataset.id);
             
-            if (e.target.matches('.form-check-input')) {
+            if (e.target.matches('.toggle-btn')) {
                 const task = tasks.find(t => t.id === taskId);
-                task.completed = e.target.checked;
+                task.completed = !task.completed;
                 saveTasks();
                 renderTasks();
             }
@@ -308,13 +476,27 @@
             
             if (e.target.matches('.edit-btn')) {
                 const task = tasks.find(t => t.id === taskId);
-                const newText = prompt('Edit task:', task.text);
-                if (newText !== null) {
-                    task.text = newText.trim();
-                    saveTasks();
-                    renderTasks();
-                    showNotification('Task updated');
-                }
+                const modal = new bootstrap.Modal(document.getElementById('editTaskModal'));
+                const editInput = document.getElementById('editTaskInput');
+                const saveBtn = document.getElementById('saveTaskBtn');
+
+                // Populate modal with current task text
+                editInput.value = task.text;
+
+                // Show the modal
+                modal.show();
+
+                // Handle save button click
+                saveBtn.onclick = () => {
+                    const newText = editInput.value.trim();
+                    if (newText) {
+                        task.text = newText;
+                        saveTasks();
+                        renderTasks();
+                        showNotification('Task updated');
+                        modal.hide();
+                    }
+                };
             }
         });
 
@@ -328,7 +510,6 @@
 
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-        // Initial render
         renderTasks();
     </script>
 </body>
